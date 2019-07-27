@@ -1,6 +1,4 @@
 const request = require('request');
-import { getTitle } from './functions/getTitle';
-const fetch = require('node-fetch');
 //Commonly used variables
 const wikiMedia = 'https://en.wikipedia.org/w/api.php?' //Default wikiMedia format
 
@@ -17,8 +15,6 @@ const getWiki = (page) => {
 	}
 }
 console.log(getWiki(page));
-
-//good article on promises: https://medium.com/dev-bits/writing-neat-asynchronous-node-js-code-with-promises-32ed3a4fd098
 
 //WikiMedia API (https://www.mediawiki.org/wiki/API:Properties)
 //https://en.wikipedia.org/w/api.php?

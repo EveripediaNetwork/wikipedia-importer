@@ -146,10 +146,10 @@ const getSentences = (element, $) => {
 		return {
 			type: 'sentence',
 			index: index,
-			text: text,
+			text: text
 		}
 	})
-	console.log(output);
+	return output;
 }
 
 module.exports = getSentences;
