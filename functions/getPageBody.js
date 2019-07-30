@@ -4,8 +4,11 @@ const getSentences = require('./pagebodyfunctionalities/getSentences');
 const getImage = require('./pagebodyfunctionalities/getImage');
 const getCategory = require('./pagebodyfunctionalities/getCategory');
 const getList = require('./pagebodyfunctionalities/getList');
+const getDescList = require('./pagebodyfunctionalities/getDescList');
+const getTable = require('./pagebodyfunctionalities/getTable');
 const wikipedia = 'https://en.wikipedia.org/wiki/';
-const sections = []; // array of {paragraphs: , images: } objects 
+const sections = []; // array of {paragraphs: Paragraph[] , images: Media[]} objects
+
 
 const getPageBody = (page) => { 
 	const url = `${wikipedia}${page}`;
@@ -20,7 +23,7 @@ const getPageBody = (page) => {
 		$content.children('p, h1, h2, h3, h4, h5, h6, div, table, ul, dl').each((i, el) => { 
 			$el = $(el);
 			if ($el[0].name == 'p') { //create new paragraph
-				let items = getSentences(el, $);
+				let items = getSentences(el, $); //returns array of paragraphItems[] of type Sentence
 				paragraphs.push({
 					index: paragraphIndex,
 					items: items,
@@ -38,7 +41,7 @@ const getPageBody = (page) => {
 				paragraphIndex = 0; //reset paragraphIndex
 				images = [] //reset images array 
 				section = {} //instantiate new empty section with first paragraph being an h tag
-				create a new paragraph with h tag 
+				// create a new paragraph with h tag 
 				paragraphs.push({
 					index:, 
 					items: getCategory(el, $); 
@@ -50,7 +53,6 @@ const getPageBody = (page) => {
 			// 	getImage(el, $);
 			// }
 			// // else if($el[0].name == 'table' ) {
-
 			// // }
 			else if ($el[0].name == 'ul') {//Lists and ListItems
 				let items = getList(el, $);
@@ -62,12 +64,16 @@ const getPageBody = (page) => {
 				})
 				paragraphIndex++;	
 			}
-	// 		else if($el[0].name == 'dl') { //DescList and DescListItems 
-	// 			//create new paragraph 
-	// 			//forEach dl create and append item to paragraph items array
-	// 		}
-
-	// 	})
+			else if($el[0].name == 'dl') { //DescList and DescListItems 
+				let items = getDescList(el, $);
+				paragraphs.push({
+					index: paragraphIndex,
+					items: items,
+					tag_type: 'dl',
+					attrs: {}
+				})
+			}
+		})
 		})
 	})
 	return sections;
@@ -77,10 +83,3 @@ getPageBody('Nullifier_Party');
 module.exports = getPageBody;
 
 //break code at references
-//Daimler_AG page not working
-
-// Enrag%C3%A9s|Enrag&#xE9;s (é)
-
-///bugs :
-//&apos; represents 's
-//&quot (i.e. &quot;without&quot;) represents (i.e. "without"); 

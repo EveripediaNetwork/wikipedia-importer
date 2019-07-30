@@ -9,5 +9,4 @@ const getCategory = (element, $) => {
 	console.log('');
 }
 
-
 module.exports = getCategory;

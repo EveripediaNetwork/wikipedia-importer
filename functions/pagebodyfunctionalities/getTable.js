@@ -1,7 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const cleanAttributes = require('./pagebodyfunctionalities/getAttributes');
-const htmlVoidElements = require('html-void-elements');
+const getTagClass = require('./pagebodyfunctionalities/getTagClass');
 const wikipedia = 'https://en.wikipedia.org/wiki/';
 const table = {
   type: 'wikitable' | 'body-table',
@@ -14,61 +14,6 @@ const table = {
 let rows = [];
 let cells = [];
 let content = []; //cell content
-
-
-const BLOCK_ELEMENTS = [ 
-    "address",
-    "article",
-    "aside",
-    "blockquote",
-    "canvas",
-    "dd",
-    "div",
-    "dl",
-    "dt",
-    "fieldset",
-    "figcaption",
-    "figure",
-    "footer",
-    "form",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "header",
-    "hgroup",
-    "hr",
-    "li",
-    "main",
-    "nav",
-    "noscript",
-    "ol",
-    "output",
-    "p",
-    "pre",
-    "section",
-    "table",
-    "td",
-    "tfoot",
-    "th",
-    "tr",
-    "ul",
-    "video"
-];
-
-const getTagClass = (tag) => {
-  if (BLOCK_ELEMENTS.indexOf(tag) !== -1) {
-    tag_class = 'block';
-  }
-  else if (htmlVoidElements.indexOf(tag) !== -1)  {
-    tag_class = 'void'
-  } 
-  else {
-    tag_class = 'inline'
-  }
-}
 
 
 
@@ -142,27 +87,8 @@ function recursiveNestedContent(element, text, $) { //element
   }
 }
  
-function doRequest(page) {
-	const url = `${wikipedia}${page}`;
- 	return new Promise(function (resolve, reject) {
-    	request(url, function (error, res, html) {
-      	if (!error && res.statusCode == 200) {
-      	  resolve(html);
-     	 } else {
-       	 reject(error);
-      }
-    });
-  });
-}
-
-async function main() {
-  const html = await doRequest('Nullifier_Party'); 
-  
-  $ = cheerio.load(html);
-  const $content = $('div.mw-parser-output');
-  //.wikitable, .body-table
-  $content.find('.infobox').each((i, el) => { //for each table 
-    let $table = $(el); 
+const getTable = (element, $) => {
+    let $table = $(element); 
     $table.find('tr').each((i2, el2) => { //for each row
       cells = []; //reset cells array for new row
       let $row = $(el2);
@@ -170,7 +96,7 @@ async function main() {
         index: i2,
         attrs: cleanAttributes(el2.attrs),
         tag_type: 'tr',
-        tag_class: 'block', //TagClass
+        tag_class: 'block', 
         cells: []
       }
       $row.find('td, th').each((i3, el3) => { //for each cell
@@ -180,7 +106,7 @@ async function main() {
           index: i3,
           attrs: cleanAttributes(el3.attrs),
           tag_type: $cell[0].name,
-          tag_class: 'block', //TagClass
+          tag_class: 'block', 
           content: [], //NestedContentItem[]
         }
         $cell.contents().each((i4, el4) => { //each piece of content inside of a cell
@@ -194,10 +120,22 @@ async function main() {
       rows.push(row)
       })
 
-      // setTimeout(() => console.log(cellcontent), 3000);
-      // console.log(cellcontent);
-      return false;
-    })
+    let tbody = {
+      attrs: cleanAttributes(element.attrs),
+      rows: rows
+    };
+    table.tbody = tbody;
+    return table;
   }
 
-  main();
+module.exports = {
+  getTable: getTable, 
+  recursiveNestedContent: recursiveNestedContent
+};
+
+
+
+
+
+
+
