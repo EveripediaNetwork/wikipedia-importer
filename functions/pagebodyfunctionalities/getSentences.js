@@ -14,9 +14,9 @@ const getSentences = (element, $) => {
 	
 	// populate sentences array 
 	while (i < chars.length) {
-		if (i == (chars.length - 2) && chars[chars.length -1] !== 
-			'.' && chars[chars.length -1] !== 
-			'?' && chars[chars.length -1] !== 
+		if (i == (chars.length - 2) && chars[chars.length - 1] !== 
+			'.' && chars[chars.length - 1] !== 
+			'?' && chars[chars.length - 1] !== 
 			'!' ) 
 		{ //this if statement if to account for li sentences that don't always end with proper punctuation
 			end = i + 1;

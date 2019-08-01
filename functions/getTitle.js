@@ -3,20 +3,6 @@ const request = require('request');
 const format = 'format=json';
 const wikiMedia = 'https://en.wikipedia.org/w/api.php?' //Default wikiMedia format
 
-
-//WikiMedia API (https://www.mediawiki.org/wiki/API:Properties)
-//https://en.wikipedia.org/w/api.php?
-//action=parse&prop=title&rvprop=content&format=json&titles=Anarchism&rvslots=main
-
-// export var getTitle = (page) => {
-// 	const action = 'action=parse';
-// 	const prop = 'prop=displaytitle';
-// 	fetch(wikiMedia + action + '&' + prop + '&' + format + '&' + page)
-// 	.then( wikiText => wikiText.json())
-// 	.then(data => console.log(data.parse.displaytitle))
-// };
-
-
 const getTitle = (page) => {
 	const format = 'format=json';
 	const wikiMedia = 'https://en.wikipedia.org/w/api.php?' //Default wikiMedia format

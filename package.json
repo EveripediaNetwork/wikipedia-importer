@@ -14,6 +14,7 @@
     "cheerio": "^1.0.0-rc.3",
     "html-tokenizer": "^3.0.0",
     "html-void-elements": "^1.0.4",
+    "mime": "^2.4.4",
     "node": "^12.6.0",
     "node-fetch": "^2.6.0",
     "react-attr-converter": "^0.3.1",

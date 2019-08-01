@@ -1,4 +1,6 @@
 const request = require('request');
+const getTimeStamp = require('./pagebodyfunctionalities/getTimeStamp');
+
 
 const doRequest = (MediaWiki) => {
  	return new Promise(function (resolve, reject) {
@@ -62,19 +64,7 @@ let metaData =
 
 async function getMetaData(page) {
 	//Create and append creation_timestamp
-
-	let d = new Date();
-	let month = d.getUTCMonth();
-	let day = d.getUTCDate();
-	let year = d.getUTCFullYear();
-	let hour = d.getUTCHours();
-	let minutes = d.getUTCMinutes();
-	let seconds = d.getUTCSeconds();
-	let term = 'AM';
-	if (hour >= 12) {
-		term = 'PM';
-	}
-	let creationtime = month + '/' + day + '/' + year + ' ' + hour + ':' + minutes + ':' + seconds + ' ' + term + ' ' + 'UTC';
+	let creationtime = getTimeStamp();
 	metaData.push({key: 'creation_timestamp', value: creationtime});
 
 	//get and append last_modified ??

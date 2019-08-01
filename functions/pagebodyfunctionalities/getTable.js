@@ -1,7 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
-const cleanAttributes = require('./pagebodyfunctionalities/getAttributes');
-const getTagClass = require('./pagebodyfunctionalities/getTagClass');
+const cleanAttributes = require('./getAttributes');
+const getTagClass = require('./getTagClass');
 const wikipedia = 'https://en.wikipedia.org/wiki/';
 const table = {
   type: 'wikitable' | 'body-table',
@@ -14,8 +14,6 @@ const table = {
 let rows = [];
 let cells = [];
 let content = []; //cell content
-
-
 
 // construct NestedContentItems
 function recursiveNestedContent(element, text, $) { //element
