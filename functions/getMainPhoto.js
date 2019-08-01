@@ -1,10 +1,8 @@
-//infobox
-//inline
+//rough draft
 const request = require('request');
 const cheerio = require('cheerio');
 const getImage = require('./pagebodyfunctionalities/getImage');
 const wikipedia = 'https://en.wikipedia.org/wiki/';
-// const $mainPhoto = $('.main-photo-wrap img.main-photo'); 
 
 const getMainPhoto = (page) => {
 	const url = `${wikipedia}${page}`;
@@ -36,6 +34,7 @@ const getMainPhoto = (page) => {
 			return {
 				url: 'https://epcdn-vz.azureedge.net/static/images/no-image-slide-big.png',
 				captions: null,
+				thumb:'https://epcdn-vz.azureedge.net/static/images/no-image-slide.png',
 				type: main_photo 
 			}
 		}
