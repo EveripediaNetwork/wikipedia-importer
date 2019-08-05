@@ -1,19 +1,16 @@
-const request = require('request');
-const cheerio = require('cheerio');
 const cleanAttributes = require('./getAttributes');
 const getTagClass = require('./getTagClass');
-const wikipedia = 'https://en.wikipedia.org/wiki/';
-const table = {
-  type: 'wikitable' | 'body-table',
-  attrs: {}, 
-  caption: {},
-  thead: {},
-  tbody: {},
-  tfoot: {}
-};
-let rows = [];
-let cells = [];
-let content = []; //cell content
+// let table = {
+//   type: 'wikitable', //change code to 
+//   attrs: {}, 
+//   caption: {},
+//   thead: {},
+//   tbody: {},
+//   tfoot: {}
+// };
+// let rows = [];
+// let cells = [];
+// let content = []; //cell content
 
 // construct NestedContentItems
 function recursiveNestedContent(element, text, $) { //element
@@ -86,6 +83,18 @@ function recursiveNestedContent(element, text, $) { //element
 }
  
 const getTable = (element, $) => {
+    let table = {
+      type: 'wikitable', //change code to 
+      attrs: {}, 
+      caption: {},
+      thead: {},
+      tbody: {},
+      tfoot: {}
+    };
+    let rows = [];
+    let cells = [];
+    let content = []; //cell content
+
     let $table = $(element); 
     $table.find('tr').each((i2, el2) => { //for each row
       cells = []; //reset cells array for new row

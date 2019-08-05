@@ -46,7 +46,7 @@ const getMainPhoto = (page) => {
 
 
 		// const $mainPhoto = $('.main-photo-wrap img.main-photo'); 
-		console.log($.html($mainPhoto));
+		// console.log($.html($mainPhoto));
 		// let $infobox = $content.find('infobox');
 		// if ($infobox.length > 0) {
 		// 	$infobox.find('img');

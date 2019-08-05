@@ -41,7 +41,7 @@ const getImage = (element, $) => {
 		if (!url.includes('.jpg') && !url.includes('.png')) { //prevent edge case
 			url = 'https:' + src;
 		}
-		let attribtes = getMediaAttributes(url);
+		let attributes = getMediaAttributes(url);
 		// let extension = attributes.extension	
 		return {
 			type: 'section_image',

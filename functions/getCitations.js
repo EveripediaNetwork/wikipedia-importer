@@ -75,12 +75,8 @@ const getCitations = (page) => {
 		 		citations.push(citation);
 	 			}
 	 		})
-	 	console.log(citations);
 	 	return citations;
 		}
 	})
 }
 
-
-
-getCitations('Mongolia');

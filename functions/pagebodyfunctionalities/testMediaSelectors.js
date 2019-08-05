@@ -20,5 +20,5 @@ const testMedia = (page) => {
 	})
 }
 
-testMedia('Thomas_Jefferson');
+
 
