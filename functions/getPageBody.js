@@ -4,12 +4,11 @@ const getImage = require('./pagebodyfunctionalities/getImage');
 const getCategory = require('./pagebodyfunctionalities/getCategory');
 const getList = require('./pagebodyfunctionalities/getList');
 const getDescList = require('./pagebodyfunctionalities/getDescList');
-const getTable = require('./pagebodyfunctionalities/getTable');
+const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable2');
 const getAttributes = require('./pagebodyfunctionalities/getAttributes');
 const sections = []; // array of {paragraphs: Paragraph[] , images: Media[]} objects
 let paragraphs = [];
 let images = [];
-
 
 const getPageBody = (html) => {
 	const $ = cheerio.load(html, {decodeEntities: false});
@@ -58,7 +57,7 @@ const getPageBody = (html) => {
 		else if(tag == 'table') {
 			let tableclass = $el.attr('class').trim();
 			if (tableclass === "wikitable" || tableclass === "body-table") {
-				let table = getTable.getTable(el, $);
+				let table = getTable(el, $);
 				paragraphs.push({
 					index: paragraphIndex,
 					items: table,
@@ -72,7 +71,7 @@ const getPageBody = (html) => {
 			let childTable = $el.find('table').first();
 			let tableclass = childTable.attr('class').trim();
 			if (tableclass === "wikitable" || tableclass === "body-table") {
-				let table = getTable.getTable(childTable, $);
+				let table = getTable(childTable, $);
 				paragraphs.push({
 					index: paragraphIndex,
 					items: table,

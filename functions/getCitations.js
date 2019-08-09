@@ -80,3 +80,4 @@ const getCitations = (page) => {
 	})
 }
 
+//Incorporate return citation book html 

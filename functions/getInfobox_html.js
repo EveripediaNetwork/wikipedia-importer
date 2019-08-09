@@ -1,6 +1,6 @@
 const request = require('request');
 const cheerio = require('cheerio');
-const getTable = require('./pagebodyfunctionalities/getTable');
+const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable');
 const wikipedia = 'https://en.wikipedia.org/wiki/';
 const Table = {}; // array of {paragraphs: , images: } objects 
 
@@ -18,7 +18,7 @@ const getInfoBox = (page) => {
 		if ($table.length == 0) { //page does not contain info_box 
 			return {};
 		}
-		return getTable.getTable($table, $); 
+		return getTable($table, $); 
 	})
 }
 

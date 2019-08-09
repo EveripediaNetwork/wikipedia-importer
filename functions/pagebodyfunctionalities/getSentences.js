@@ -1,5 +1,8 @@
 const getSentences = (element, $) => {
 	let $el = $(element);
+	if ($el.html() == null) { //edge case for naiveGetTable
+		return
+	}
 	const chars = $el.html().split(''); //Character array of paragraph
 
 	let start = 0; //Starting index of sentence
