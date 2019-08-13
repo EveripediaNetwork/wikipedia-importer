@@ -30,7 +30,7 @@ const testCheerio = () => {
 	</td>`, {decodedEntities: false});
 
 	let $body = $('body big a');
-	console.log($.html($body.empty().append('hi')));
+	// console.log($.html($body.empty().append('hi')));
 
 
 	// $(body).contents().each( (i, el) => {

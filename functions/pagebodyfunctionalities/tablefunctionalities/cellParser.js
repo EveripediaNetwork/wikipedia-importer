@@ -1,4 +1,6 @@
-let cleanAttributes = require('../getAttributes');
+const cleanAttributes = require('../getAttributes');
+const getSentences = require('../getSentences'); 
+const getTagClass = require('../getTagClass');
 
 //global variables  
 let nestedContentItems = []; 
@@ -30,11 +32,11 @@ const getParsedCellContent = (cell, $) => {
 			}	
 		
 	}
-	for (i = 0; i < nestedContentItems.length; i++) {
-		if (nestedContentItems[i].type == 'text') {
-			console.log(nestedContentItems[i].content[0].content)
-		}
-	}
+	// for (i = 0; i < nestedContentItems.length; i++) {
+	// 	if (nestedContentItems[i].type == 'text') {
+	// 		console.log(nestedContentItems[i].content[0].content)
+	// 	}
+	//}
 	return nestedContentItems
 }
 
@@ -51,7 +53,6 @@ const cellParser = (element, $) => {
 	if ($element.attr('style') == 'display: none;') { 
       return
   	}
-
 
 	//else element is nested   
 	$element.contents().each( (i, el) => {
@@ -72,7 +73,7 @@ const cellParser = (element, $) => {
       		}
       		//push br tag 
       		nestedContentItems.push({
-	        attrs: cleanAttributes(element.attrs),
+	        attrs: cleanAttributes(el.attrs),
 	        content: [], 
 	        tag_class: "void",
 	        tag_type: 'br',
@@ -93,6 +94,30 @@ const cellParser = (element, $) => {
 		      
 			} //need to account for images 
 			return
+  		}
+  		else if ($(el)[0].name == 'ul') { //edge case for infobox_html
+  			let listElements = $(el).children('li');
+  			let listContent = [];
+  			for ( i = 0; i < listElements.length; i++ ) {
+  				listContent.push({
+  					type: 'tag', 
+  					tag_type: 'li',
+  					tag_class: getTagClass($(listElements[i])[0].name),
+  					attrs: cleanAttributes(listElements[i].attrs),
+  					content: {
+  						type: 'text',
+  						content: getSentences(listElements[i], $)
+  					}
+  				})
+  			}
+  			nestedContentItems.push({ //push UL element
+  				type: 'tag',
+  				tag_type: 'ul',
+  				tag_class: getTagClass($(el)[0].name),
+  				attrs: cleanAttributes(el.attrs),
+  				content: listContent
+  			}) 
+  			return 
   		}
   		else { //nested tag is reached 
 	  		cellParser(el , $);
@@ -120,3 +145,6 @@ const parseAnchorTag = (anchorTagElement, $) => { //account for img and other an
 }
 
 module.exports = getParsedCellContent; 
+
+//remaining patches:
+//account for image tags that are inside of anchor tags

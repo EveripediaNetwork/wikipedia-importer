@@ -115,9 +115,9 @@ const getTableNaive = (element, $) => {
         }
         let cellText = $cell.text(); //simply .text() rather than recursive traversal 
         let parsedItems = getSentences($cell, $);
-        console.log(cellText);
-        console.log(' ');
-        console.log(parsedItems);
+        // console.log(cellText);
+        // console.log(' ');
+        // console.log(parsedItems);
 
 
         cells.push(cell); 

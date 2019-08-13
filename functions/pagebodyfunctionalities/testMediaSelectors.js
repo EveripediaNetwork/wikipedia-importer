@@ -14,7 +14,7 @@ const testMedia = (page) => {
 			let url = $el.attr('src');
 			if (url.length > 0) {
 				let data = getMediaAttributes('https://upload.wikimedia.org/wikipedia/commons/c/c2/UB_downtown.jpg');
-				console.log(data.citationcategorytype);
+				// console.log(data.citationcategorytype);
 			}
 		})
 	})

@@ -8,12 +8,8 @@ const getPageBody = require('./functions/getPageBody');
 const getInfoBox = require('./functions/getInfobox_html');
 const getMetaData = require('./functions/getMetaData');
 const getCitations = require('./functions/getCitations');
-
-
-//commonly used variables 
+//variable to build request endpoint 
 const wikipedia = 'https://en.wikipedia.org/wiki/';
-
-
 
 const newImport = async (page) => { 
 	let page_title = await getTitle(page); //getTitle returns a promise -- await that promise 
@@ -23,33 +19,24 @@ const newImport = async (page) => {
 		return {
 			page_title: page_title, 
 			// main_photo: 
-			// infobox_html:
+			infobox_html: getInfoBox(body),
 			page_body: getPageBody(body),
-			// infoboxes: 
-			// citations: getCitations(body)
+			infoboxes: [],
+			citations: getCitations(body, url),
+			media_gallery: []
+			// amp_info: 
+
 		}
 	})
 	return articlejson; //return promise 
 }
-
-
 
 const main = async (page) => {
 	let articlejson = await newImport(page); //wait for promise to resolve 
 	console.log(articlejson);
 }
 
+main('Mongolia');
 
-main('List_of_presidents_of_the_United_States');
+//	if(!error & response.statusCode == 200) {
 
-
-	// return x = {
-	// 	page_title: title,
-	// 	main_photo: null,
-	// 	infobox_html: null,
-	// 	page_body: null,
-	// 	infoboxes: null,
-	// 	citations: null,
-	// 	media_gallery: null,
-	// 	metadata: null
-	// }

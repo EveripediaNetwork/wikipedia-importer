@@ -48,7 +48,7 @@ const cellParser = (cell, $) => {    //cell could technically be any element*
   if (textArr == []) {
     return //quick break
   }
-  console.log(textArr); 
+  // console.log(textArr); 
   for (i = 0; i < textArr.length; i++) {
     contentArray.push({ //NestedTextItem
       type: 'text',

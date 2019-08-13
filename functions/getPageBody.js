@@ -6,6 +6,7 @@ const getList = require('./pagebodyfunctionalities/getList');
 const getDescList = require('./pagebodyfunctionalities/getDescList');
 const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable2');
 const getAttributes = require('./pagebodyfunctionalities/getAttributes');
+const parseText = require('./pagebodyfunctionalities/textParser');
 const sections = []; // array of {paragraphs: Paragraph[] , images: Media[]} objects
 let paragraphs = [];
 let images = [];
@@ -19,16 +20,26 @@ const getPageBody = (html) => {
 		let $el = $(el);
 		let tag = $el[0].name;
 		if (tag == 'p') { //create new paragraph
-			let items = getSentences(el, $); //returns array of paragraphItems[] of type Sentence
+			let text = parseText(el, $); //returns array of paragraphItems[] of type Sentence
+			let sentenceItem = {
+				type: 'Sentence',
+				index: 0,
+				text: text
+			}
 			paragraphs.push({  
 				index: paragraphIndex,
-				items: items,
+				items: sentenceItem,
 				tag_type: 'p',
 				attrs: getAttributes(el.attrs)
 			})
 			paragraphIndex++;
 		}
 		else if($el.prop('tagName').indexOf("H") > -1 && $el.find('.mw-headline').length > 0){ //create new section when h tag is reached
+			//stop iterating through page body once references are reached 
+			if ( $el.attr('id') == 'References' ) {
+				return false
+			}
+
 			sections.push({ //push current section
 				paragraphs: paragraphs,
 				images: images
@@ -54,8 +65,8 @@ const getPageBody = (html) => {
 				}
 			}
 		}
-		else if(tag == 'table') {
-			let tableclass = $el.attr('class').trim();
+		else if (tag == 'table') {
+			let tableclass = $el.attr('class');
 			if (tableclass === "wikitable" || tableclass === "body-table") {
 				let table = getTable(el, $);
 				paragraphs.push({

@@ -54,6 +54,6 @@ const getMainPhoto = (page) => {
 	})
 }
 
-getMainPhoto('Holland'); 
+// getMainPhoto('Holland'); 
 module.exports = getMainPhoto;
 

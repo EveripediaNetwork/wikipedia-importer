@@ -18,8 +18,5 @@ const getTitle = async (page) => {
 }
 
 
-
-getTitle('Anarchism');
-
 module.exports = getTitle;
 

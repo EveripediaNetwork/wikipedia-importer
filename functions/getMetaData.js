@@ -88,7 +88,7 @@ async function getMetaData(page) {
 	//url_slug_alternate?
 }
 
-getMetaData('Anarchism');
+// getMetaData('Anarchism');
 
 
 

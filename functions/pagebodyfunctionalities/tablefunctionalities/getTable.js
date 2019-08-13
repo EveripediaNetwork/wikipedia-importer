@@ -49,7 +49,7 @@ const getTable = (element, $) => {
             if (!isContentNested && store !== '') { //push built sentence
               content.push({ type: 'text', 
                              content: [{type: 'sentence', index: 0, text: store }]})
-              console.log(store);
+              // console.log(store);
             }
             store = '' //reset store at line break
             content.push( { 
@@ -69,7 +69,7 @@ const getTable = (element, $) => {
           if (i3 == (numItemsInCell - 1)) {
             content.push({ type: 'text', 
                              content: [{type: 'sentence', index: 0, text: store }]})
-            console.log(store);
+            // console.log(store);
             cell.content = content;
           }
           // if (item !== {} && item !== undefined) {

@@ -44,13 +44,13 @@ const BLOCK_ELEMENTS = [
 
 const getTagClass = (tag) => {
   if (BLOCK_ELEMENTS.indexOf(tag) !== -1) {
-    tag_class = 'block';
+    return 'block'
   }
   else if (htmlVoidElements.indexOf(tag) !== -1)  {
-    tag_class = 'void'
+    return 'void'
   } 
   else {
-    tag_class = 'inline'
+    return 'inline'
   }
 }
 
