@@ -33,6 +33,9 @@ let defaultDescription = [
 const getCitations = (html, url) => { 
 	const $ = cheerio.load(html, {decodeEntities: false});
 	let citations = []; //instatiate return object - stores all citation objects 
+	//store {key, value} pair objects for O(1) access to determine internal citations
+	//where key == citationId, and value == url | ISBN | ...   
+	let internalCitations = {};  //global variable
 	//default push 
 	citations.push({
 		url: url, //references the specific wikipedia page 
@@ -54,7 +57,7 @@ const getCitations = (html, url) => {
 		
 		if ($citation.length > 0) { //if the citation is immediately present
 			let description = parseText($citation, $);
-			citations.push({
+			let cur = { //current citation
 				url: $citation.find('a').attr('href'),
 				attribution: 'rel=nofollow',
 				category: "NONE",
@@ -64,7 +67,11 @@ const getCitations = (html, url) => {
 				attribution: 'rel=nofollow',
 				timestamp: getTimeStamp(),
 				mime: 'None'
-			})
+			}
+			let key = i+1;
+			internalCitations[key] = cur.url;
+			citations.push(cur);
+			
 		} 
 		else { //else traverse biography (primary, secondary, tertiary sources to find citation)
 			let citationStore = []; 
@@ -90,11 +97,23 @@ const getCitations = (html, url) => {
 					if (citationStore.length == 0) { //again, quick return store is empty
 						return 
 					}
-					for (i = 0; i < citationStore.length; i++) {
-						if (citationStore[i] == '#' + $(el4).attr('id')) { //citation found in biography
+					for (j = 0; j < citationStore.length; j++) {
+				
+						if (citationStore[j] == '#' + $(el4).attr('id')) { //citation found in biography
 							let description = parseText(el4, $);
-							citations.push({
-								url: '', //leave blank for now
+							//type of citation = $(el4).attr('class');
+							let url = '';
+							$(citationStore[j]).find('a').each((i5, el5) => {
+								let $el5 = $(el5);
+								if ($el5.attr('class') == "external text") {
+									url = $el5.attr('href');
+								}
+							})
+							if ( url == undefined ) {
+								url == '';
+							}
+							let cur = {
+								url: url, //leave blank for now
 								//don't know if you want to store ISBN in url attribute
 								attribution: 'rel=nofollow',
 								category: "NONE",
@@ -104,8 +123,11 @@ const getCitations = (html, url) => {
 								attribution: 'rel=nofollow',
 								timestamp: getTimeStamp(),
 								mime: 'None'
-							})
-						citationStore.splice(i, 1); //remove citation from citation store as it has 
+							}
+							citations.push(cur);
+							internalCitations[i+1] = cur.url;
+
+							citationStore.splice(j, 1); //remove citation from citation store as it has 
 						//been resolved 
 						}
 					}
@@ -113,7 +135,10 @@ const getCitations = (html, url) => {
 			}) 
 		}
 	}) 
-	return citations; 
+	return {
+		citations: citations,
+		internalCitations: internalCitations //map passed to textParser for instant lookup of for internal citations 
+	}; 
 }
 
 module.exports = getCitations;

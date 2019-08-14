@@ -6,12 +6,15 @@ const getList = require('./pagebodyfunctionalities/getList');
 const getDescList = require('./pagebodyfunctionalities/getDescList');
 const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable2');
 const getAttributes = require('./pagebodyfunctionalities/getAttributes');
+const getCitations = require('./getCitations');
 const parseText = require('./pagebodyfunctionalities/textParser');
 const sections = []; // array of {paragraphs: Paragraph[] , images: Media[]} objects
 let paragraphs = [];
 let images = [];
 
-const getPageBody = (html) => {
+const getPageBody = (html, url) => {
+	let citations = getCitations(html, url);
+	let internalCitations = citations.internalCitations;
 	const $ = cheerio.load(html, {decodeEntities: false});
 	const $content = $('div.mw-parser-output');
 	let section = {}; 
@@ -20,7 +23,7 @@ const getPageBody = (html) => {
 		let $el = $(el);
 		let tag = $el[0].name;
 		if (tag == 'p') { //create new paragraph
-			let text = parseText(el, $); //returns array of paragraphItems[] of type Sentence
+			let text = parseText(el, $, internalCitations); //returns array of paragraphItems[] of type Sentence
 			let sentenceItem = {
 				type: 'Sentence',
 				index: 0,
@@ -113,7 +116,10 @@ const getPageBody = (html) => {
 			paragraphIndex++;
 		}
 	})
-	return sections;
+	return {
+		sections: sections,
+		citations: citations.citations
+	};
 }
 
 module.exports = getPageBody;

@@ -16,7 +16,7 @@ const cleanURL = (string) => {
 	let i = (url.length - 1); 
 	while(url.charAt(i) !== '/') {
 		if (i == 0) {
-			return string; // safety if cleaning fcn dosent work 
+			return string; // safety if cleaning fucntion dosent work 
 		}
 		i--;
 	}
@@ -25,12 +25,6 @@ const cleanURL = (string) => {
 }
 
 const getImage = (element, $) => { 
-	//Instantiate return object 
-	let Media = {
-	type: '', //section_image | main_photo | inline-image | normal 
-	url: '',
-	caption: [], //Sentence array
-	}
 	let $el = $(element);
 	let $thumbinner = $el.find('.thumbinner');
 	let $img = $thumbinner.find('img'); 
@@ -42,7 +36,6 @@ const getImage = (element, $) => {
 			url = 'https:' + src;
 		}
 		let attributes = getMediaAttributes(url);
-		// let extension = attributes.extension	
 		return {
 			type: 'section_image',
 			url: url,
@@ -54,6 +47,12 @@ const getImage = (element, $) => {
 			// thumb: $el.attr('data-thumbnail') **
 		}
 	}
+		src = $el.attr('src');
+		url = cleanURL(src);
+		if (!url.includes('.jpg') && !url.includes('.png')) { //prevent edge case
+			url = 'https:' + src;
+		}
+		return url;
 }
 
 

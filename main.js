@@ -16,16 +16,17 @@ const newImport = async (page) => {
 	const url = `${wikipedia}${page}`;
 	let articlejson = rp(url)
 	.then(body => {
+		//note that page_body and citations are computed together to account for internal citations 
+		const pagebody = getPageBody(body, url); //page body and citations 
 		return {
 			page_title: page_title, 
 			// main_photo: 
 			infobox_html: getInfoBox(body),
-			page_body: getPageBody(body),
+			page_body: pagebody.sections,
 			infoboxes: [],
-			citations: getCitations(body, url),
+			citations: pagebody.citations,
 			media_gallery: []
 			// amp_info: 
-
 		}
 	})
 	return articlejson; //return promise 
@@ -36,7 +37,7 @@ const main = async (page) => {
 	console.log(articlejson);
 }
 
-main('Mongolia');
+main('Anarchism');
 
 //	if(!error & response.statusCode == 200) {
 

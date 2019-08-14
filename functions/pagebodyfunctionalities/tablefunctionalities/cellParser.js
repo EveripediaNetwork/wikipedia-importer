@@ -1,6 +1,7 @@
 const cleanAttributes = require('../getAttributes');
 const getSentences = require('../getSentences'); 
 const getTagClass = require('../getTagClass');
+const getImage = require('../getImage');
 
 //global variables  
 let nestedContentItems = []; 
@@ -10,6 +11,7 @@ const getParsedCellContent = (cell, $) => {
 	nestedContentItems = []; //for each cell reset content [] 
 	accumulator = ''; //reset for each cell 
 	cellParser(cell, $);
+	accumulator = accumulator.replace(/\n/ig, '');
 	let tempLength = nestedContentItems.length;
 	if (tempLength == 0) {	
 	nestedContentItems.push({ 
@@ -87,13 +89,23 @@ const cellParser = (element, $) => {
 		// const manageAnchorTags = (el, $) => {
 			if ($(el).children().length == 0) { //resolve anchor tags that only cotain text 
 		      accumulator += parseAnchorTag(el, $);
+		      return
 		 
-		    } else if ($.html(el).includes('<br>')) {  //anchor tag has inner tags  
+		    } else if ($(el).attr('class') == 'image') { //inline-image 
+		    	let url = getImage($(el).find('img'), $);
+		    	let a = $(el).empty().append(url);
+		    	accumulator += parseAnchorTag(a, $);
+		    	// console.log(parseAnchorTag(a, $));
+		    	return
+		    }
+		    else if ($.html(el).includes('<br>')) {  //anchor tag has inner tags  
 		        let a = ($.html($(el))).replace('<br>', '\n');
 		        accumulator += parseAnchorTag(a, $);
+		        return
 		      
-			} //need to account for images 
-			return
+			} else {
+				return
+			}
   		}
   		else if ($(el)[0].name == 'ul') { //edge case for infobox_html
   			let listElements = $(el).children('li');
@@ -102,20 +114,20 @@ const cellParser = (element, $) => {
   				listContent.push({
   					type: 'tag', 
   					tag_type: 'li',
-  					tag_class: getTagClass($(listElements[i])[0].name),
+  					tag_class: getTagClass($(listElements[i])[0].name), 
   					attrs: cleanAttributes(listElements[i].attrs),
-  					content: {
+  					content: { 
   						type: 'text',
   						content: getSentences(listElements[i], $)
-  					}
-  				})
-  			}
-  			nestedContentItems.push({ //push UL element
-  				type: 'tag',
-  				tag_type: 'ul',
-  				tag_class: getTagClass($(el)[0].name),
-  				attrs: cleanAttributes(el.attrs),
-  				content: listContent
+  					} 
+  				}) 
+  			} 
+  			nestedContentItems.push({ //push UL element 
+  				type: 'tag', 
+  				tag_type: 'ul', 
+  				tag_class: getTagClass($(el)[0].name), 
+  				attrs: cleanAttributes(el.attrs), 
+  				content: listContent 
   			}) 
   			return 
   		}
