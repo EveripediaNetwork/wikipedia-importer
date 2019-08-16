@@ -1,7 +1,7 @@
 //This folder contains functionalities to derive Media Object attributes
 //Functions here are taken directly from Travis Moore and Kedar Iyer's code 
 //with some minor adjustments to fit my code 
-//Thanks 
+//Thanks  
 
 const VALID_VIDEO_EXTENSIONS = [
     '.mp4',
@@ -10,7 +10,7 @@ const VALID_VIDEO_EXTENSIONS = [
     '.f4v',
     '.ogv',
     '.ogx',
-    '.wmv',
+    '.wmv', 
     '.webm',
     '.3gp',
     '.3g2',

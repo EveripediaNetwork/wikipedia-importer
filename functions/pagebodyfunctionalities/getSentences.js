@@ -1,3 +1,6 @@
+//old sentenceParser 
+//new sentenceParser is called textParser
+
 const getSentences = (element, $) => {
 	let $el = $(element);
 	if ($el.html() == null) { //edge case for naiveGetTable

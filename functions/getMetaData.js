@@ -1,6 +1,6 @@
 const request = require('request');
+let encodeUrl = require('encodeurl'); 
 const getTimeStamp = require('./pagebodyfunctionalities/getTimeStamp');
-
 
 const doRequest = (MediaWiki) => {
  	return new Promise(function (resolve, reject) {
@@ -29,14 +29,6 @@ let metaData =
 	value: false
 },
 {
-	key: "page_type",
-	value: 'Thing'
-},
-{
-	key: "page_type",
-	value: 'Thing'
-},
-{
 	key: "sub_page_type",
 	value: null
 },
@@ -55,10 +47,6 @@ let metaData =
 {
 	key:"is_locked",
 	value: false
-},
-{
-	key: "page_lang",
-	value: "en"
 }
 ];
 
@@ -66,14 +54,16 @@ async function getMetaData(page) {
 	//Create and append creation_timestamp
 	let creationtime = getTimeStamp();
 	metaData.push({key: 'creation_timestamp', value: creationtime});
-
-	//get and append last_modified ??
 	metaData.push({key:'last_modified', value: null}); //null because it was just created 
-
 	//get and append url_slug
 	let titles = '&titles=' + page;
 	let MediaWiki = "https://en.wikipedia.org/w/api.php?action=query&prop=info&inprop=url&format=json" + titles;
 	let data = await doRequest(MediaWiki);
+
+	let page_lang = Object.values(data.query.pages)[0].pagelanguage;
+	//append page_lang;
+	metaData.push({key: 'page_lang', value: page_lang});
+	//compute and append slug and url_slug_alternate
 	let url = Object.values(data.query.pages)[0].fullurl;
 	let slug = '';
 	//compute slug from url
@@ -83,35 +73,8 @@ async function getMetaData(page) {
 		i++;
 	}
 	metaData.push({key: 'slug', value: slug});
-
-
-	//url_slug_alternate?
+	metaData.push({key:'url_slug_alternate', value: encodeUrl(slug)});
+	return metaData
 }
 
-// getMetaData('Anarchism');
-
-
-
-// export type DiffType = 'add' | 'delete' | 'none';
-
-// Valid Metadata keys
-    //page_lang?: string;
-    //page_type?: string; //default to Thing with a capital T
-    //is_removed?: boolean;
-    //is_adult_content?: boolean;
-    //creation_timestamp?: Date;
-    //last_modified?: Date;
-    //url_slug?: string;
-    //url_slug_alternate?: string;
-    //sub_page_type?: string;
-    //is_wikipedia_import?: boolean;
-    //is_indexed?: boolean;
-    //bing_index_override?: boolean;
-    //is_locked?: boolean;
-    //ipfs_hash: string;
-// Valid Metadata keys for diffs only:
-    //old_hash: string;
-    //new_hash: string;
-    //proposal_id: number;
-    //diff_changes: number; # Number of entities changed by the diff
-    //diff_percent: number; # Percentage of document changed by diff
+module.exports = getMetaData;

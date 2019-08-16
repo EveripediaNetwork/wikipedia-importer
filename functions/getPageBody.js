@@ -1,69 +1,74 @@
 const cheerio = require('cheerio');
-const getSentences = require('./pagebodyfunctionalities/getSentences');
+const parseText = require('./pagebodyfunctionalities/textParser');
 const getImage = require('./pagebodyfunctionalities/getImage');
 const getCategory = require('./pagebodyfunctionalities/getCategory');
 const getList = require('./pagebodyfunctionalities/getList');
 const getDescList = require('./pagebodyfunctionalities/getDescList');
-const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable2');
+const getTable = require('./pagebodyfunctionalities/tablefunctionalities/getTable');
 const getAttributes = require('./pagebodyfunctionalities/getAttributes');
 const getCitations = require('./getCitations');
-const parseText = require('./pagebodyfunctionalities/textParser');
-const sections = []; // array of {paragraphs: Paragraph[] , images: Media[]} objects
-let paragraphs = [];
-let images = [];
+
+//input: page html, url
+//output sections[] 
+
+//Logic: 
+//Whenever <p>, <ul>, <dl>, <table>, <div> tags are reached
+//Create and push a new paragraph into paragraphs []
+//Whenever an <h1>, ..., <h6> tag is reached, create and push a new section
 
 const getPageBody = (html, url) => {
+	//compute citations first to be able to implement internal citations
+	//when parsing the page body
 	let citations = getCitations(html, url);
 	let internalCitations = citations.internalCitations;
+
+	const sections = []; //return object: array of {paragraphs: Paragraph[] , images: Media[]} objects
+	let section = {};  //current section
+	let paragraphs = [];
+	let images = [];
+	let paragraphIndex = 0; //keep track of current paragraph
+
 	const $ = cheerio.load(html, {decodeEntities: false});
 	const $content = $('div.mw-parser-output');
-	let section = {}; 
-	let paragraphIndex = 0; //keep track of current paragraph
+
 	$content.children('p, h1, h2, h3, h4, h5, h6, div, table, ul, dl, center').each((i, el) => { 
 		let $el = $(el);
 		let tag = $el[0].name;
-		if (tag == 'p') { //create new paragraph
-			let text = parseText(el, $, internalCitations); //returns array of paragraphItems[] of type Sentence
-			let sentenceItem = {
-				type: 'Sentence',
-				index: 0,
-				text: text
-			}
+		if (tag == 'p') { 
+			let sentenceItems = parseText(el, $, internalCitations); //returns sentence[]
 			paragraphs.push({  
 				index: paragraphIndex,
-				items: sentenceItem,
+				items: sentenceItems,
 				tag_type: 'p',
 				attrs: getAttributes(el.attrs)
 			})
 			paragraphIndex++;
 		}
 		else if($el.prop('tagName').indexOf("H") > -1 && $el.find('.mw-headline').length > 0){ //create new section when h tag is reached
-			//stop iterating through page body once references are reached 
 			if ( $el.attr('id') == 'References' ) {
-				return false
+				return false //terminate loop once references are reached (they've already been computed)
 			}
-
 			sections.push({ //push current section
 				paragraphs: paragraphs,
 				images: images
 			})
-			paragraphs = []; //reset paragrapghs array 
+			paragraphs = []; //reset paragraphs array 
 			paragraphIndex = 0; //reset paragraphIndex
 			images = [] //reset images array 
 			section = {} //instantiate new empty section with first paragraph being an h tag
 			// create a new paragraph with h tag 
 			paragraphs.push({ 
-				index: paragraphIndex, 
+				index: paragraphIndex,
 				items: getCategory(el, $),
 				tag_type: $el[0].name, 
 				attrs: getAttributes(el.attrs)
 			});
 			paragraphIndex++;
 		}
-		else if (tag == 'div') {
+		else if (tag == 'div') { //potentially a section image
 			let divClass = $el.attr('class');
 			if (divClass !== undefined) {
-				if (divClass.includes("thumb")) {
+				if (divClass.includes("thumb")) { //section image found
 					images.push(getImage(el, $));
 				}
 			}
@@ -81,9 +86,10 @@ const getPageBody = (html, url) => {
 				paragraphIndex++;
 			}
 		}
+		//sometimes pagebody tables are nested in center tags
 		else if (tag == 'center' && $el.children('table').length > 0) { 
-			let childTable = $el.find('table').first();
-			let tableclass = childTable.attr('class').trim();
+			let childTable = $el.find('table');
+			let tableclass = childTable.attr('class');
 			if (tableclass === "wikitable" || tableclass === "body-table") {
 				let table = getTable(childTable, $);
 				paragraphs.push({
@@ -95,8 +101,8 @@ const getPageBody = (html, url) => {
 				paragraphIndex++;
 			}
 		}
-		else if ($el[0].name == 'ul') {//Lists and ListItems
-			let items = getList(el, $); //return a list item
+		else if ($el[0].name == 'ul') {
+			let items = getList(el, $); //returns array of li elements
 			paragraphs.push({
 				index: paragraphIndex,
 				items: items,
@@ -105,8 +111,8 @@ const getPageBody = (html, url) => {
 			})
 			paragraphIndex++;	
 		}
-		else if($el[0].name == 'dl') { //DescList and DescListItems 
-			let items = getDescList(el, $); //return a list item of type DescList
+		else if($el[0].name == 'dl') { //DescList
+			let items = getDescList(el, $); //returns array of dl | dt items
 			paragraphs.push({
 				index: paragraphIndex,
 				items: items,
@@ -119,9 +125,7 @@ const getPageBody = (html, url) => {
 	return {
 		sections: sections,
 		citations: citations.citations
-	};
+	}
 }
 
 module.exports = getPageBody;
-
-//break code at references

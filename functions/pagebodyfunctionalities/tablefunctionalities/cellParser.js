@@ -1,17 +1,19 @@
 const cleanAttributes = require('../getAttributes');
-const getSentences = require('../getSentences'); 
+const parseText = require('../textParser'); 
 const getTagClass = require('../getTagClass');
 const getImage = require('../getImage');
+const parseAnchorTag = require('../parseAnchorTag');
+const parseInternalCitation = require('../parseInternalCitation');
 
 //global variables  
 let nestedContentItems = []; 
 let accumulator = '';
-
+//replace(/\n/ig, '')
 const getParsedCellContent = (cell, $) => {
 	nestedContentItems = []; //for each cell reset content [] 
 	accumulator = ''; //reset for each cell 
 	cellParser(cell, $);
-	accumulator = accumulator.replace(/\n/ig, '');
+	accumulator = accumulator.trim(); 
 	let tempLength = nestedContentItems.length;
 	if (tempLength == 0) {	
 	nestedContentItems.push({ 
@@ -85,27 +87,10 @@ const cellParser = (element, $) => {
 	        return 
 		}
 		else if ($(el)[0].name == 'a') {
-		// manageAnchorTags(el, $);
-		// const manageAnchorTags = (el, $) => {
-			if ($(el).children().length == 0) { //resolve anchor tags that only cotain text 
-		      accumulator += parseAnchorTag(el, $);
-		      return
-		 
-		    } else if ($(el).attr('class') == 'image') { //inline-image 
-		    	let url = getImage($(el).find('img'), $);
-		    	let a = $(el).empty().append(url);
-		    	accumulator += parseAnchorTag(a, $);
-		    	// console.log(parseAnchorTag(a, $));
-		    	return
-		    }
-		    else if ($.html(el).includes('<br>')) {  //anchor tag has inner tags  
-		        let a = ($.html($(el))).replace('<br>', '\n');
-		        accumulator += parseAnchorTag(a, $);
-		        return
-		      
-			} else {
-				return
-			}
+			accumulator += parseAnchorTag(el, $);
+  		}
+  		else if ($(el)[0].name == 'sup') {
+  			accumulator += parseInternalCitation($(el).find('a'), $);
   		}
   		else if ($(el)[0].name == 'ul') { //edge case for infobox_html
   			let listElements = $(el).children('li');
@@ -118,7 +103,7 @@ const cellParser = (element, $) => {
   					attrs: cleanAttributes(listElements[i].attrs),
   					content: { 
   						type: 'text',
-  						content: getSentences(listElements[i], $)
+  						content: parseText(listElements[i], $)
   					} 
   				}) 
   			} 
@@ -137,26 +122,5 @@ const cellParser = (element, $) => {
 	})
 }
 
-const parseAnchorTag = (anchorTagElement, $) => { //account for img and other anchor tag formats
-  let $element = $(anchorTagElement);
-  let wikiLink = '';
-  const linkText = $element.text(); 
-  //get slug 
-  const hrefAttr = $element.attr('href');
-  let index = 6;
-  let slug = ''; 
-  while(index < hrefAttr.length) { 
-    slug += hrefAttr.charAt(index); 
-    index++; 
-  }
-  wikiLink = '[[LINK|lang_en|' + slug + '|' + linkText + ']]';
-  if (wikiLink == undefined || anchorTagElement == undefined) {
-  	return ''
-  }
-  return wikiLink
-}
 
 module.exports = getParsedCellContent; 
-
-//remaining patches:
-//account for image tags that are inside of anchor tags

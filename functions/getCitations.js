@@ -34,8 +34,8 @@ const getCitations = (html, url) => {
 	const $ = cheerio.load(html, {decodeEntities: false});
 	let citations = []; //instatiate return object - stores all citation objects 
 	//store {key, value} pair objects for O(1) access to determine internal citations
-	//where key == citationId, and value == url | ISBN | ...   
-	let internalCitations = {};  //global variable
+	//where key == citationId, and value == url   
+	let internalCitations = {};  
 	//default push 
 	citations.push({
 		url: url, //references the specific wikipedia page 
@@ -74,62 +74,43 @@ const getCitations = (html, url) => {
 			
 		} 
 		else { //else traverse biography (primary, secondary, tertiary sources to find citation)
-			let citationStore = []; 
-			//store citation identifiers that is present in the inital reflist 
-			$reference.find('a').each( (i2, el2) => { 
-				citationStore.push($(el2).attr('href')); //the href attr is the identifier 
-			})
-
-			if (citationStore.length == 0) {
-				return //quick return if no citations exist
-			}
-
-			//traverse biography and compare citations to identifiers to identify the citation
-			//in the biography
+			//and compare citations to identifiers to identify the citation in the biography
+			let found = false; 
 			$content.find('div .refbegin').each((i3, el3) => { //for each biography (i.e., primary, secondary, tertiary)  
-				//once citations have been resolve (i.e., citationStore.length == 0)
-				//quick return so that you do not waste time iterating 
-				//through the rest of the biography 
-				if (citationStore.length == 0) { 
-					return 
-				}
+				let a = $reference.find('a').attr('href')
 				$(el3).find('cite').each( (i4, el4) => { //for each citation
-					if (citationStore.length == 0) { //again, quick return store is empty
-						return 
-					}
-					for (j = 0; j < citationStore.length; j++) {
-				
-						if (citationStore[j] == '#' + $(el4).attr('id')) { //citation found in biography
-							let description = parseText(el4, $);
-							//type of citation = $(el4).attr('class');
-							let url = '';
-							$(citationStore[j]).find('a').each((i5, el5) => {
-								let $el5 = $(el5);
-								if ($el5.attr('class') == "external text") {
-									url = $el5.attr('href');
-								}
-							})
-							if ( url == undefined ) {
-								url == '';
+					if (a == '#' + $(el4).attr('id')) { //citation found in biography
+						let description = parseText(el4, $);
+						//type of citation = $(el4).attr('class'); (e.g, journal, book etc..)
+						let url = '';
+						$(el4).find('a').each((i5, el5) => {
+							let $el5 = $(el5);
+							if ($el5.attr('class') == "external text") {
+								url = $el5.attr('href');
 							}
-							let cur = {
-								url: url, //leave blank for now
-								//don't know if you want to store ISBN in url attribute
-								attribution: 'rel=nofollow',
-								category: "NONE",
-								citation_id: i + 1, 
-								description: description,
-								social_type: null,
-								attribution: 'rel=nofollow',
-								timestamp: getTimeStamp(),
-								mime: 'None'
-							}
-							citations.push(cur);
-							internalCitations[i+1] = cur.url;
-
-							citationStore.splice(j, 1); //remove citation from citation store as it has 
-						//been resolved 
+						})
+						if ( url == undefined ) {
+							url == '';
 						}
+						let cur = {
+							url: url, //leave blank for now
+							//don't know if you want to store ISBN in url attribute
+							attribution: 'rel=nofollow',
+							category: "NONE",
+							citation_id: i + 1, 
+							description: description,
+							social_type: null,
+							attribution: 'rel=nofollow',
+							timestamp: getTimeStamp(),
+							mime: 'None'
+						}
+						citations.push(cur);
+						internalCitations[i+1] = cur.url;
+						found = !found;
+						return
+					}
+					if (found) { //quick break to stop iterating if citation has been found in biography
+						return
 					}
 				}) 
 			}) 
@@ -137,7 +118,7 @@ const getCitations = (html, url) => {
 	}) 
 	return {
 		citations: citations,
-		internalCitations: internalCitations //map passed to textParser for instant lookup of for internal citations 
+		internalCitations: internalCitations //map passed to textParser for instant internal citation lookup
 	}; 
 }
 

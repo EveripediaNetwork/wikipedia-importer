@@ -1,10 +1,10 @@
-const request = require('request');
 const rp = require('request-promise');
 
 //Commonly used variables
 const format = 'format=json';
 const wikiMedia = 'https://en.wikipedia.org/w/api.php?' //Default wikiMedia format
 
+//make call to wikipedia API
 const getTitle = async (page) => {
 	const format = 'format=json';
 	const wikiMedia = 'https://en.wikipedia.org/w/api.php?' //Default wikiMedia format

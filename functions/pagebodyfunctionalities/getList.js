@@ -1,14 +1,17 @@
-const getSentences = require('./getSentences');
-let listItems = [];
-//for each li - paragraphItems[].append(li);
+const parseText = require('./textParser');
+
+//input: <ul> element
+//output: array of formatted li elements
+
 const getList = (element, $) => {
+	let listItems = []; //return obj 
 	let $element = $(element); //ul element 
 	$element.children().each((i, el) => { //for each ListItem 
-		let sentences = getSentences(el, $);
+		let sentence = parseText(el, $, internalCitations);
 		listItems.push({
 			type: 'list_item',
 			index: i,
-			sentences: sentences,
+			sentences: sentence,
 			tag_type: 'li'
 		});
 	})
