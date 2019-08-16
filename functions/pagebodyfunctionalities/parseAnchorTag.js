@@ -17,8 +17,6 @@ const parseAnchorTag = (element, $) => {
   	}
 }
 
-
-
 const parseLink = (anchorTagElement, $) => { //LINK
   let $element = $(anchorTagElement);
   let wikiLink = '';

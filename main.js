@@ -44,5 +44,5 @@ const main = async (page) => {
 	console.log(articlejson);
 }
 
-main('List_of_presidents_of_the_United_States');
+// main('List_of_Presidents_of_the_United_States'); 
 

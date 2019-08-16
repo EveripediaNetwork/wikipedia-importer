@@ -15,6 +15,9 @@ const getParsedCellContent = (cell, $) => {
 	cellParser(cell, $);
 	accumulator = accumulator.trim(); 
 	let tempLength = nestedContentItems.length;
+	//Since the code pushes nestedContentItems only when br tags are reached
+	//The following conditional code will push the remaining code after the br tag is reached 
+	//within a cell (as it was not pushed yet since a br tag was never reached)
 	if (tempLength == 0) {	
 	nestedContentItems.push({ 
    	  	type: 'text', 
@@ -28,19 +31,13 @@ const getParsedCellContent = (cell, $) => {
 			}
 		}
 		else {
-				if (accumulator != '') {
-					nestedContentItems.push({ 
-				   	  	type: 'text', 
-				     	content: [{type: 'sentence', index: 0, content: accumulator}] });
-				}
-			}	
-		
+			if (accumulator != '') {
+				nestedContentItems.push({ 
+			   	  	type: 'text', 
+			     	content: [{type: 'sentence', index: 0, content: accumulator}] });
+			}
+		}	
 	}
-	// for (i = 0; i < nestedContentItems.length; i++) {
-	// 	if (nestedContentItems[i].type == 'text') {
-	// 		console.log(nestedContentItems[i].content[0].content)
-	// 	}
-	//}
 	return nestedContentItems
 }
 
