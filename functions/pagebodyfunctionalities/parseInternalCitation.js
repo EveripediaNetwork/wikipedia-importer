@@ -1,4 +1,7 @@
 parseInternalCitation = (el, $) => {
+	if (internalCitations == undefined) {
+		return ''
+	}
 	let $el = $(el);
 	let text = $el.text();
 	let href = $el.attr('href');
