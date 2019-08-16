@@ -11,8 +11,8 @@ parseInternalCitation = (el, $) => {
 		}
 		i++;
 	}
-	if (internalCitations[cleanText] == '') {
-		return ''
+	if (internalCitations[cleanText] == '') {  
+		return '' //if citation was not properly captured in getCitations() do not return the given internal citation
 	}
 	return ' ' + '[[CITE|' + cleanText + '|' + internalCitations[cleanText] + ']]' + ' ';
 }
