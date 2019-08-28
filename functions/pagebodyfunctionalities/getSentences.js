@@ -159,6 +159,3 @@ const getSentences = (element, $) => {
 }
 
 module.exports = getSentences;
-//need to fix  
-// \'s
-//account for []

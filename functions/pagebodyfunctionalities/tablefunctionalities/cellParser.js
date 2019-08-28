@@ -8,7 +8,7 @@ const parseInternalCitation = require('../parseInternalCitation');
 //global variables  
 let nestedContentItems = []; 
 let accumulator = '';
-//replace(/\n/ig, '')
+
 const getParsedCellContent = (cell, $) => {
 	nestedContentItems = []; //for each cell reset content [] 
 	accumulator = ''; //reset for each cell 
@@ -21,20 +21,20 @@ const getParsedCellContent = (cell, $) => {
 	if (tempLength == 0) {	
 	nestedContentItems.push({ 
    	  	type: 'text', 
-     	content: [{type: 'sentence', index: 0, content: accumulator}] });
+     	content: [{type: 'sentence', index: 0, text: accumulator}] });
 	} else {
 		if (nestedContentItems[tempLength - 1].type == 'text') {
 			if (nestedContentItems[tempLength - 1].content[0].content != accumulator) {
 				nestedContentItems.push({ 
 			   	  	type: 'text', 
-			     	content: [{type: 'sentence', index: 0, content: accumulator}] });
+			     	content: [{type: 'sentence', index: 0, text: accumulator}] });
 			}
 		}
 		else {
 			if (accumulator != '') {
 				nestedContentItems.push({ 
 			   	  	type: 'text', 
-			     	content: [{type: 'sentence', index: 0, content: accumulator}] });
+			     	content: [{type: 'sentence', index: 0, text: accumulator}] });
 			}
 		}	
 	}
@@ -70,7 +70,7 @@ const cellParser = (element, $) => {
 				//sentence is completed 
 				nestedContentItems.push({
 	        	type: 'text', 
-	        	content: [{type: 'sentence', index: 0, content: accumulator}] });
+	        	content: [{type: 'sentence', index: 0, text: accumulator}] });
       		}
       		//push br tag 
       		nestedContentItems.push({
@@ -86,7 +86,7 @@ const cellParser = (element, $) => {
 		else if ($(el)[0].name == 'a') {
 			accumulator += parseAnchorTag(el, $);
   		}
-  		else if ($(el)[0].name == 'sup') {
+  		else if ($(el)[0].name == 'sup') { 
   			accumulator += parseInternalCitation($(el).find('a'), $);
   		}
   		else if ($(el)[0].name == 'ul') { //edge case for infobox_html
@@ -97,10 +97,10 @@ const cellParser = (element, $) => {
   					type: 'tag', 
   					tag_type: 'li',
   					tag_class: getTagClass($(listElements[i])[0].name), 
-  					attrs: cleanAttributes(listElements[i].attrs),
+  					attrs: cleanAttributes(listElements[i].attribs),
   					content: { 
   						type: 'text',
-  						content: parseText(listElements[i], $)
+  						content: parseText(listElements[i], $, {})
   					} 
   				}) 
   			} 
@@ -108,7 +108,7 @@ const cellParser = (element, $) => {
   				type: 'tag', 
   				tag_type: 'ul', 
   				tag_class: getTagClass($(el)[0].name), 
-  				attrs: cleanAttributes(el.attrs), 
+  				attrs: cleanAttributes(el.attribs), 
   				content: listContent 
   			}) 
   			return 

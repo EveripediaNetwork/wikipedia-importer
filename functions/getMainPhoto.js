@@ -1,7 +1,7 @@
 const getImage = require('./pagebodyfunctionalities/getImage');
 
 
-const getMainPhoto = (html, images) => {
+const getMainPhoto = (html) => {
 
 	//No main photo was found. 
 	//return place holder:

@@ -6,7 +6,7 @@ const getTable = (element, $) => {
     let $table = $(element);
     let table = { //instantiate return object
       type: $table.attr('class'),
-      attrs: cleanAttributes(element.attrs), 
+      attrs: cleanAttributes($table[0].attribs), 
       caption: {rows: [], attrs: {}}, 
       thead: {rows: [], attrs: {}},
       tbody: {},
@@ -21,7 +21,7 @@ const getTable = (element, $) => {
       let $row = $(el);
       let row = {
         index: i,
-        attrs: cleanAttributes(el.attrs),
+        attrs: cleanAttributes(el.attribs),
         tag_type: 'tr',
         tag_class: 'block', 
         cells: []
@@ -32,7 +32,7 @@ const getTable = (element, $) => {
         if (content != [] && content != undefined) {
           let cell = {
             index: i2,
-            attrs: cleanAttributes(el2.attrs),
+            attrs: cleanAttributes(el2.attribs),
             tag_type: $cell[0].name,
             tag_class: 'block', 
             content: content
@@ -44,11 +44,11 @@ const getTable = (element, $) => {
       rows.push(row)
     })
   let tbody = {
-    attrs: cleanAttributes($table.find('tbody').attrs),
+    attrs: cleanAttributes($table.find('tbody')[0].attribs),
     rows: rows
   }
   table.tbody = tbody;
-  return table;
+  return [table];
 }
 
 module.exports = getTable;

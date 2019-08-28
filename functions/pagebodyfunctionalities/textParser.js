@@ -19,20 +19,20 @@ let interalCitations = {};
 
 const accumulateText = (element, $, citations) => {
 	if (element.type == 'text') { //quick return if element is text
-		return {
+		return [{
 			type: 'sentence',
 			index: 0,
 			text: $(element).text()
-		}
+		}]
 	}
 	accumulator = ''; //reset accumulator for each element
 	internalCitations = citations;
 	textParser(element, $);
-	return {
+	return [{
 		type: 'sentence',
 		index: 0,
 		text: accumulator.trim()
-	}
+	}]
 }
 
 //parse all but table contentItems (my code for that is in ./tablefunctionalities folder)

@@ -88,7 +88,9 @@ const getPageBody = (html, url) => {
 		}
 		//sometimes pagebody tables are nested in center tags
 		else if (tag == 'center' && $el.children('table').length > 0) { 
+			console.log('ATTRIBS')
 			let childTable = $el.find('table');
+			console.log(childTable[0].attribs);
 			let tableclass = childTable.attr('class');
 			if (tableclass === "wikitable" || tableclass === "body-table") {
 				let table = getTable(childTable, $);
@@ -96,7 +98,7 @@ const getPageBody = (html, url) => {
 					index: paragraphIndex,
 					items: table,
 					tag_type: 'table',
-					attrs: getAttributes(childTable.attrs)
+					attrs: getAttributes(childTable[0].attribs)
 				})
 				paragraphIndex++;
 			}

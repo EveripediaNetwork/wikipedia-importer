@@ -43,8 +43,6 @@ const getImage = (element, $) => {
 			mime: attributes.mime,
 			category: attributes.citationcategorytype,
 			timestamp: getTimeStamp(),
-			// let extension = attributes.extension
-			// thumb: $el.attr('data-thumbnail') **
 		}
 	}
 		src = $el.attr('src');
